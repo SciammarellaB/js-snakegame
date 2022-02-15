@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Game</title>
+</head>
+<body>
+
+    <canvas id="canvas" width="400" height="400"></canvas>
+    <span id="test">0</span>
+    <style>
+        #canvas{
+            position: absolute;
+            left: 50%;
+            right: 50%;
+            transform: translate(-50%, 50%);
+            border: 1px solid black;
+        }
+    </style>
+
+</body>
+
+<script>
+
+    const board = document.getElementById("canvas");
+    const context = board.getContext("2d");
+    document.addEventListener("keydown", changeDirection);
+
+    let snake =[
+        {x: 200, y: 200},
+        {x: 190, y: 200},
+        {x: 180, y: 200},
+        {x: 170, y: 200},
+        {x: 160, y: 200}
+    ]
+
+    let dx, dy;
+    dy = 0;
+    dx = 10;
+
+    let foodX, foodY;
+
+    let speed = 100;
+
+    main();
+    genFood();
+
+    function main(){
+        setTimeout(function onTick(){
+            clearCanvas();
+            drawSnake();
+            moveSnake();
+            reposition();
+            drawFruit();
+            eatFood();
+            main();
+
+            document.getElementById('test').innerHTML = snake.length;
+
+        }, speed);
+    }
+
+    function drawSnake(){
+        snake.forEach(drawSnakePart);
+    }
+
+    function clearCanvas(){
+        context.fillStyle = 'white';
+        context.strokestyle = 'black';
+        context.fillRect(0,0, board.width, board.height);
+        context.strokeRect(0,0, board.width, board.height);
+    }
+
+    function drawSnakePart(snakePart){
+        context.fillStyle = 'lightBlue';
+        context.strokestyle = 'black';
+        context.fillRect(snakePart.x, snakePart.y, 10, 10);
+        context.strokeRect(snakePart.x, snakePart.y, 10, 10);
+    }
+
+    function growSnake(){
+        const head = {x: snake[0].x + dx, y: snake[0].y + dy};
+        snake.unshift(head);
+        snake.unshift(head);
+    }
+
+    function genFood(){
+        foodX = Math.round(Math.random() * ((board.width - 10) + 0) / 10) * 10;
+        foodY = Math.round(Math.random() * ((board.height - 10) + 0) / 10) * 10;
+    }
+
+    function eatFood(){
+        snake.forEach(function eatenFood(part){
+            if(part.x == foodX && part.y == foodY){
+                genFood();
+                growSnake();
+                levelOptimization();
+            }
+        });
+    }
+
+    function drawFruit(){
+        context.fillStyle = 'lightgreen';
+        context.strokestyle = 'darkgreen';
+        context.fillRect(foodX, foodY, 10, 10);
+        context.strokeRect(foodX, foodY, 10, 10);
+    }
+
+    function moveSnake(){
+        const head = {x: snake[0].x + dx, y: snake[0].y + dy};
+        snake.unshift(head);
+        snake.pop();
+    }
+
+    function levelOptimization(){
+        speed -= 1;
+    }
+
+    function changeDirection(event){
+
+        const LEFT_KEY = 37;
+        const RIGHT_KEY = 39;
+        const UP_KEY = 38;
+        const DOWN_KEY = 40;
+
+        const keyPressed = event.keyCode;
+        const goingUp = dy === -10;
+        const goingDown = dy === 10;
+        const goingRight = dx === 10;
+        const goingLeft = dx === -10;
+
+        if (keyPressed === LEFT_KEY && !goingRight)
+        {
+            dx = -10;
+            dy = 0;
+        }
+    
+        if (keyPressed === UP_KEY && !goingDown)
+        {
+            dx = 0;
+            dy = -10;
+        }
+    
+        if (keyPressed === RIGHT_KEY && !goingLeft)
+        {
+            dx = 10;
+            dy = 0;
+        }
+    
+        if (keyPressed === DOWN_KEY && !goingUp)
+        {
+            dx = 0;
+            dy = 10;
+        }
+    }
+
+    function reposition(){
+        if(snake[0].x < 0)
+            snake[0].x = 400;
+
+        if(snake[0].x > 400)
+            snake[0].x = 0;
+
+        if(snake[0].y < 0)
+            snake[0].y = 400;
+
+        if(snake[0].y > 400)
+            snake[0].y = 0;
+    }
+
+</script>
+
+</html>
