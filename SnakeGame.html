@@ -6,17 +6,55 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Snake Game</title>
 </head>
-<body>
-
-    <canvas id="canvas" width="400" height="400"></canvas>
-    <span id="test">0</span>
+<body class="corpo">
+    <div style="display: flex; align-items: center; justify-content: center; flex-direction: column">
+        <span style="font-size: 26px">Snake Game</span>
+        <span style="font-size: 22px" id="maiorPonto">Maior Ponto: 0</span>
+        <span style="font-size: 22px" id="ponto">Pontos: 0</span>
+    </div>
+    <canvas id="canvas"></canvas>
+    <div class="commands" style="display: flex; align-items: center; justify-content: center; position: absolute; top: 65%;">
+        <div style="position: relative">
+            <img src="./1670503.png" style="width: 250px;">
+            <button onclick="clickButton(38)" style="padding: 30px; position: absolute; top: 10px; right: 90px; opacity: 0"></button>            
+            <button onclick="clickButton(37)" style="padding: 30px; position: absolute; top: 95px; right: 170px; opacity: 0"></button>
+            <button onclick="clickButton(40)" style="padding: 30px; position: absolute; top: 95px; right: 90px; opacity: 0"></button>
+            <button onclick="clickButton(39)" style="padding: 30px; position: absolute; top: 95px; right: 10px; opacity: 0"></button>
+        </div>
+    </div>
     <style>
-        #canvas{
-            position: absolute;
-            left: 50%;
-            right: 50%;
-            transform: translate(-50%, 50%);
-            border: 1px solid black;
+
+        @media (pointer: fine){
+            .corpo{
+                display: block;
+                align-items: center;
+                justify-content: center;
+            }
+            #canvas{
+                position: absolute;
+                left: 50%;
+                right: 50%;
+                transform: translate(-50%, 50%);
+                border: 1px solid black;
+            }
+            .commands{
+                display: none !important;
+            }
+        }
+
+        @media (pointer: coarse){
+            .corpo{
+                display: flex;
+                align-items: flex-start;
+                justify-content: center;
+            }
+            #canvas{
+                position: absolute;
+                left: 50%;
+                right: 50%;
+                transform: translate(-50%, 30%);
+                border: 1px solid black;
+            }
         }
     </style>
 
@@ -44,6 +82,15 @@
 
     let speed = 100;
 
+    let pontos = 0;
+    let maiorPonto = localStorage.getItem('maiorPonto') ? parseInt(localStorage.getItem('maiorPonto')) : 0;
+
+    board.width = 350;
+    board.height = 350;
+
+    if(maiorPonto == 0)
+        localStorage.setItem('maiorPonto', 0);
+
     main();
     genFood();
 
@@ -57,7 +104,14 @@
             eatFood();
             main();
 
-            document.getElementById('test').innerHTML = snake.length;
+            document.getElementById('maiorPonto').innerHTML = 'Maior ponto: ' + maiorPonto.toString();
+            document.getElementById('ponto').innerHTML = 'Pontos: ' + pontos.toString();
+
+            if(pontos > maiorPonto){
+                console.log(maiorPonto);
+                maiorPonto = pontos;
+                localStorage.setItem('maiorPonto', maiorPonto);
+            }
 
         }, speed);
     }
@@ -97,6 +151,7 @@
                 genFood();
                 growSnake();
                 levelOptimization();
+                pontos ++;
             }
         });
     }
@@ -118,11 +173,20 @@
         speed -= 1;
     }
 
+    function clickButton(code){
+        let event = {
+            keyCode: code
+        }
+        changeDirection(event);
+    }
+
     function changeDirection(event){
 
+        console.log(event)
+
         const LEFT_KEY = 37;
-        const RIGHT_KEY = 39;
         const UP_KEY = 38;
+        const RIGHT_KEY = 39;
         const DOWN_KEY = 40;
 
         const keyPressed = event.keyCode;
