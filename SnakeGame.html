@@ -74,13 +74,15 @@
         {x: 160, y: 200}
     ]
 
+    let game = 1;
+
     let dx, dy;
     dy = 0;
     dx = 10;
 
     let foodX, foodY;
 
-    let speed = 100;
+    let speed = 20;
 
     let pontos = 0;
     let maiorPonto = localStorage.getItem('maiorPonto') ? parseInt(localStorage.getItem('maiorPonto')) : 0;
@@ -95,25 +97,29 @@
     genFood();
 
     function main(){
-        setTimeout(function onTick(){
-            clearCanvas();
-            drawSnake();
-            moveSnake();
-            reposition();
-            drawFruit();
-            eatFood();
-            main();
-
-            document.getElementById('maiorPonto').innerHTML = 'Maior ponto: ' + maiorPonto.toString();
-            document.getElementById('ponto').innerHTML = 'Pontos: ' + pontos.toString();
-
-            if(pontos > maiorPonto){
-                console.log(maiorPonto);
-                maiorPonto = pontos;
-                localStorage.setItem('maiorPonto', maiorPonto);
-            }
-
-        }, speed);
+        if(game){
+            setTimeout(function onTick(){
+                clearCanvas();
+                drawSnake();
+                moveSnake();
+                reposition();
+                drawFruit();
+                eatFood();
+                main();
+    
+                document.getElementById('maiorPonto').innerHTML = 'Maior ponto: ' + maiorPonto.toString();
+                document.getElementById('ponto').innerHTML = 'Pontos: ' + pontos.toString();
+    
+                if(pontos > maiorPonto){
+                    console.log(maiorPonto);
+                    maiorPonto = pontos;
+                    localStorage.setItem('maiorPonto', maiorPonto);
+                }
+    
+            }, speed);
+        }
+        else
+            lose();
     }
 
     function drawSnake(){
@@ -182,8 +188,6 @@
 
     function changeDirection(event){
 
-        console.log(event)
-
         const LEFT_KEY = 37;
         const UP_KEY = 38;
         const RIGHT_KEY = 39;
@@ -221,17 +225,33 @@
     }
 
     function reposition(){
-        if(snake[0].x < 0)
-            snake[0].x = 400;
+        if(false){
+            if(snake[0].x < 0)
+                snake[0].x = 350;
+    
+            if(snake[0].x > 350)
+                snake[0].x = 0;
+    
+            if(snake[0].y < 0)
+                snake[0].y = 350;
+    
+            if(snake[0].y > 350)
+                snake[0].y = 0;
+        }
+        else{
+            if(snake[0].x < 0 || snake[0].x > 350 || snake[0].y < 0 || snake[0].y > 350)
+                lose();
+        }
+    }
 
-        if(snake[0].x > 400)
-            snake[0].x = 0;
-
-        if(snake[0].y < 0)
-            snake[0].y = 400;
-
-        if(snake[0].y > 400)
-            snake[0].y = 0;
+    function lose(){
+        context.fillStyle = 'red';
+        context.strokestyle = 'black';
+        context.fillRect(0,0, board.width, board.height);
+        context.strokeRect(0,0, board.width, board.height);
+        context.font = "48px serif";
+        context.fillStyle = "#000000";
+        context.fillText("Fim de Jogo", (board.width / 2) - 115, (board.height / 2) + 15);
     }
 
 </script>
